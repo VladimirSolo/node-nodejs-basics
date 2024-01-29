@@ -1,25 +1,23 @@
 import { createReadStream, createWriteStream } from "fs";
-import { createGzip } from "zlib";
-import { pipeline } from "stream";
-import { promisify } from "util";
+import { pipeline } from "stream/promises";
+import zlib from "zlib";
+import { URL } from "url";
 
-const pipelineAsync = promisify(pipeline);
 const compressFile = new URL("./files/fileToCompress.txt", import.meta.url);
-const archiveFileName = "archive.gz";
+const archiveFileName = new URL("./archive.gz", import.meta.url);
 
 const compress = async () => {
-  const readStream = createReadStream(compressFile);
-  const gzipStream = createGzip();
-
-  const writeStream = createWriteStream(archiveFileName);
-
   try {
-    await pipelineAsync(readStream, gzipStream, writeStream);
-    console.log("Compression successfully complete.");
+    const readable = createReadStream(compressFile);
+    const writable = createWriteStream(archiveFileName);
+    const gzipStream = zlib.createGzip();
 
+    await pipeline(readable, gzipStream, writable);
+
+    console.log("Compression successful!");
   } catch (error) {
-    console.error("Error compression:", error);
+    console.error("Compression failed:", error);
   }
 };
 
-compress();
+await compress();
