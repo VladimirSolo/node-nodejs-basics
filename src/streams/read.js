@@ -6,6 +6,21 @@ const path = new URL("./files/fileToRead.txt", import.meta.url);
 
 const read = async () => {
   try {
+    const readable = fs.createReadStream(path, "utf-8");
+
+    await stream.promises.pipeline(readable, process.stdout);
+
+  } catch (error) {
+    console.log("STREAM operation failed");
+  }
+};
+
+await read();
+
+/* 
+
+const read = async () => {
+  try {
     const fileContent = fs.readFileSync(path, "utf-8");
 
     const readableStream = stream.Readable.from(fileContent);
@@ -22,7 +37,7 @@ const read = async () => {
 };
 
 await read();
-
+ */
 
 /* 
 const read = async () => {
