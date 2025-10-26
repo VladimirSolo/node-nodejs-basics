@@ -1,5 +1,36 @@
+import fs from "fs";
+import process from "process";
+import stream from "stream";
+
+const path = new URL("./files/fileToRead.txt", import.meta.url);
+
 const read = async () => {
-  // Write your code here
+  try {
+    const readable = fs.createReadStream(path, "utf-8");
+
+    await stream.promises.pipeline(readable, process.stdout);
+  } catch (error) {
+    console.log("STREAM operation failed");
+  }
 };
 
 await read();
+
+/* 
+const read = async () => {
+  try {
+    const readable = fs.createReadStream(path, "utf-8");
+
+    readable.on("error", (error) => console.log(`error: ${error.message}`));
+
+    readable.on("data", (chunk) => process.stdout.write(chunk));
+
+    readable.on("end", () => console.log("\nFile reading completed."));
+
+  } catch (error) {
+    console.log("STREAM operation failed");
+  }
+};
+
+await read(); 
+*/
